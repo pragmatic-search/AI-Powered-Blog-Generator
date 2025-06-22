@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   backend:
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile
     ports:
@@ -11,42 +9,32 @@ services:
       - ./backend/.env
     volumes:
       - ./backend/app:/app/app
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
-      interval: 15s
-      timeout: 10s
-      retries: 5
-      start_period: 20s
     environment:
       - PYTHONDONTWRITEBYTECODE=1
       - PYTHONUNBUFFERED=1
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        - NODE_ENV=development
     ports:
       - "5173:5173"
     environment:
-      - VITE_API_URL=http://backend:8000
-      - NODE_OPTIONS=--max_old_space_size=4096
+      - VITE_API_URL=http://localhost:8000
       - CHOKIDAR_USEPOLLING=true
     volumes:
-      - ./frontend:/app
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - ./frontend/index.html:/app/index.html
+      - ./frontend/vite.config.js:/app/vite.config.js
       - /app/node_modules
     depends_on:
-      backend:
-        condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 2GB
+      - backend
     stdin_open: true
     tty: true

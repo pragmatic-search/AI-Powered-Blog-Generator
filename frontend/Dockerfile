@@ -2,19 +2,21 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# First copy only package files
+# Copy package files
 COPY package*.json ./
 
-# Install dependencies with explicit flags
-RUN npm install --legacy-peer-deps --loglevel=error
+# Install dependencies
+RUN npm ci --only=production=false
 
-# Copy all other files
+# Copy source code
 COPY . .
 
-ENV VITE_API_URL=http://backend:8000
+# Set environment variables
+ENV VITE_API_URL=http://localhost:8000
 ENV HOST=0.0.0.0
-ENV NODE_ENV=development
+ENV PORT=5173
 
 EXPOSE 5173
 
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+# Start the development server
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]

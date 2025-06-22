@@ -5,6 +5,7 @@ from app.api.blogs import router as blogs_router
 from app.database.session import engine
 from app.models.blog import Base
 from app.api.generate_blog import BlogRequest
+from sqlalchemy import text
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -42,6 +43,6 @@ async def startup_event():
     from app.database.session import SessionLocal
     db = SessionLocal()
     try:
-        db.execute("SELECT 1")
+        db.execute(text("SELECT 1"))
     finally:
         db.close()

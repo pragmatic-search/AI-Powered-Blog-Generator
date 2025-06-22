@@ -30,11 +30,11 @@ async def generate_blog(request: BlogRequest):
             "medium": 500,
             "long": 800
         }
-        
+       
         # Create detailed prompt
         prompt = f"""
         Write a {word_counts[request.length]}-word {request.tone} blog post about "{request.topic}".
-        
+       
         Requirements:
         - Use Markdown formatting
         - Include headings (H2, H3)
@@ -42,15 +42,15 @@ async def generate_blog(request: BlogRequest):
         - Include 1-2 code examples if relevant (with proper syntax highlighting tags)
         - Use a {request.tone} tone throughout
         - Ensure the content is original and informative
-        
+       
         Structure:
         1. Introduction
         2. Main content with examples
         3. Conclusion
         """
-        
-        # Generate content
-        model = genai.GenerativeModel('gemini-pro')
+       
+        # Generate content - Updated model name
+        model = genai.GenerativeModel('gemini-1.5-flash')
         response = model.generate_content(
             prompt,
             generation_config={
@@ -59,7 +59,7 @@ async def generate_blog(request: BlogRequest):
                 "max_output_tokens": 2048,
             }
         )
-        
+       
         # Save to database
         db = next(get_db())
         blog = Blog(
@@ -73,9 +73,9 @@ async def generate_blog(request: BlogRequest):
         db.add(blog)
         db.commit()
         db.refresh(blog)
-        
+       
         return {"blog": response.text}
-    
+   
     except Exception as e:
         raise HTTPException(
             status_code=500,
