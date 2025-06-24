@@ -3,17 +3,18 @@ import axios from 'axios';
 import BlogForm from './components/BlogForm';
 import BlogView from './components/BlogView';
 import { Toaster, toast } from 'react-hot-toast';
-import './index.css'; // Ensure this import exists
+import './index.css';
 
 function App() {
   const [blogContent, setBlogContent] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
   const handleGenerate = async ({ topic, tone, length }) => {
     setIsGenerating(true);
     try {
-      const response = await axios.post('http://localhost:8000/api/generate', {
+      const response = await axios.post(`${API_URL}/api/generate`, {
         topic,
         tone,
         length,
@@ -45,7 +46,7 @@ function App() {
     
     setIsSaving(true);
     try {
-      await axios.post('http://localhost:8000/api/blogs', {
+      await axios.post(`${API_URL}/api/blogs`, {
         content: blogContent,
       });
       toast.success('Blog saved successfully!', {
